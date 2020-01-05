@@ -38,7 +38,7 @@ final class Login: ObservableObject {
             
             // Login, set success or failure + errStr to true, then login to false to continue
             
-            delay(seconds: 2) {
+            delay(seconds: 0.5) {
                 self.success = true
                 
                 self.login = false

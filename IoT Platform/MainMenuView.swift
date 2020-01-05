@@ -34,7 +34,7 @@ struct MainMenuView: View {
                 if clientStore.success {
                     // Success
                     List(0..<self.devicesArray.devicesCount) { index in
-                        NavigationLink(destination: DeviceView(device: self.devicesArray.devices[index])) {
+                        NavigationLink(destination: DeviceView(device: self.devicesArray.devices[index], serverCredential: self.serverCredential)) {
                             Text("Device \(index): \(self.clientStore.devicesArray!.devices[index].name)")
                         }
                     }
@@ -72,6 +72,7 @@ class IoTClientStore: ObservableObject {
     
     var devicesArray: DevicesArray? = nil
     
+    // TODO: Support system without central hub
     func discover() {
         if serverAddress.count == 0 {
             errorString = "Please set server URL."
@@ -118,50 +119,6 @@ class IoTClientStore: ObservableObject {
             
             self.success = true
         }.resume()
-    }
-}
-
-class DevicesArray: Codable, CustomStringConvertible {
-    var description: String {
-        return "Device Count: \(devicesCount), Devices: \(devices)"
-    }
-    
-    var devicesCount: Int
-    var devices: [Device]
-}
-
-class Device: Codable, CustomStringConvertible {
-    var description: String {
-        return "Device name: \(name), Controls: \(controls)"
-    }
-    
-    var name: String
-    var controls: [Control]
-    
-    // For previews
-    init(name: String, controls: [Control]) {
-        self.name = name
-        self.controls = controls
-    }
-}
-
-class Control: Codable, CustomStringConvertible {
-    var description: String {
-        return "Control Name: \(displayName), Parameter: \(parameterName), Type: \(type), Class: \(className)"
-    }
-    
-    var displayName: String
-    var parameterName: String
-    var type: String
-    var className: String
-    
-    // For previews, does not have function when previewing live
-    init(displayName: String, type: String) {
-        self.displayName = displayName
-        self.type = type
-        // No function, doesn't do anything
-        self.className = ""
-        self.parameterName = ""
     }
 }
 
