@@ -41,7 +41,7 @@ struct DeviceView: View {
                     Spacer()
                     
                     Text("Loading... ")
-                    ActivityIndicator(isAnimating: .constant(true), style: .medium, alwaysUseWhite: false)
+                    ActivityIndicator(isAnimating: true, style: .medium, alwaysUseWhite: false)
                     
                     Spacer()
                 }
@@ -50,13 +50,19 @@ struct DeviceView: View {
                     HStack {
                         if self.controls[index].type == "switch" {
                             // Use custom binding to let ControlHandler handle the states
+                            Text(self.controls[index].displayName)
+                            
+                            Spacer()
+                            
+                            ActivityIndicator(isAnimating: self.controlHandler.getSwitchLoadingState(for: self.controls[index].parameterName), style: .medium, alwaysUseWhite: false)
+                            
                             Toggle(isOn: Binding(get: {
                                 self.controlHandler.getSwitchState(for: self.controls[index].parameterName)
                             }, set: { newValue in
-                                self.controlHandler.setSwitchState(newValue, for: self.controls[index].parameterName)
+                                self.controlHandler.setSwitchState(newValue, to: self.device, with: self.serverCredential, for: self.controls[index].parameterName)
                             })) {
-                                Text(self.controls[index].displayName)
-                            }
+                                Text("Title")
+                            }.labelsHidden()
                         } else if self.controls[index].type == "label" {
                             Text(self.controls[index].displayName)
                             
@@ -179,6 +185,8 @@ class ControlHandler: ObservableObject {
         // TODO: Handle other types of controls
     }
     
+    // MARK: - Switch Functions
+    
     func getSwitchState(for parameterName: String) -> Bool {
         // Get manager for the device from array
         let stateManager = statesManagers.first { obj -> Bool in
@@ -188,32 +196,43 @@ class ControlHandler: ObservableObject {
         return stateManager.state
     }
     
-    func setSwitchState(_ newState: Bool, for parameterName: String) {
+    func getSwitchLoadingState(for parameterName: String) -> Bool {
+        // Get manager for the device from array
+        let stateManager = statesManagers.first { obj -> Bool in
+            return obj.control.parameterName == parameterName
+        } as! SwitchStateManager
+        
+        return stateManager.loading
+    }
+    
+    func setSwitchState(_ newState: Bool, to device: Device, with serverCredential: ServerCredential, for parameterName: String) {
         // STUB, need to update through server
         let stateManager = statesManagers.first { obj -> Bool in
             return obj.control.parameterName == parameterName
         } as! SwitchStateManager
         
+        stateManager.loading = true
+        
         stateManager.state = newState
-    }
-}
-
-// MARK: - State Managers
-/// Subclass to implement custom states
-class DeviceStateManager {
-    var control: Control
-    
-    init(control: Control) {
-        self.control = control
-    }
-}
-
-class SwitchStateManager: DeviceStateManager {
-    var state: Bool
-    
-    init(state: Bool, control: Control) {
-        self.state = state
-        super.init(control: control)
+        
+        objectWillChange.send()
+        
+        stateManager.updateState(to: device.name, with: serverCredential) { (success) in
+            if !success {
+                stateManager.state.toggle()
+            }
+            
+            stateManager.loading = false
+            
+            self.objectWillChange.send()
+        }
+        /*
+        // Temp
+        delay(seconds: 0.5) {
+            stateManager.loading = false
+            
+            self.objectWillChange.send()
+        }*/
     }
 }
 

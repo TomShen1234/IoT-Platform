@@ -13,7 +13,7 @@ import SwiftUI
 
 struct ActivityIndicator: UIViewRepresentable {
 
-    @Binding var isAnimating: Bool
+    var isAnimating: Bool
     let style: UIActivityIndicatorView.Style
     
     let alwaysUseWhite: Bool

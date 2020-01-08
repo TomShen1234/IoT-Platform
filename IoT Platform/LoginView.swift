@@ -56,7 +56,7 @@ struct LoginContainer: View {
                 
                 Spacer()
                 
-                ActivityIndicator(isAnimating: $finished, style: .medium, alwaysUseWhite: false)
+                ActivityIndicator(isAnimating: finished, style: .medium, alwaysUseWhite: false)
             }
         }.frame(width: 250)
     }

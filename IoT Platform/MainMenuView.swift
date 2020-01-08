@@ -26,7 +26,7 @@ struct MainMenuView: View {
                     Text("Server: \(serverCredential.server)")
                     HStack {
                         Text("Loading...")
-                        ActivityIndicator(isAnimating: .constant(true), style: .medium, alwaysUseWhite: false)
+                        ActivityIndicator(isAnimating: true, style: .medium, alwaysUseWhite: false)
                     }
                 }
                 .navigationBarTitle("Devices", displayMode: .automatic)

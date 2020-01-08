@@ -10,6 +10,7 @@
 		D00BF57023ACFAFB006AE10D /* DeviceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D00BF56F23ACFAFB006AE10D /* DeviceView.swift */; };
 		D0730D1123C0C0C900E3629A /* Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0730D1023C0C0C900E3629A /* Types.swift */; };
 		D0A797C6238CD3640042A5FF /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0A797C5238CD3640042A5FF /* MainView.swift */; };
+		D0BFBEEE23C4ADBE001C9052 /* StateManagers.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0BFBEED23C4ADBE001C9052 /* StateManagers.swift */; };
 		D0C6ABB12393A625002A429B /* MainMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0C6ABB02393A625002A429B /* MainMenuView.swift */; };
 		D0C6ABB52393A727002A429B /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0C6ABB32393A727002A429B /* Utilities.swift */; };
 		D0C6ABB62393A727002A429B /* ActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0C6ABB42393A727002A429B /* ActivityIndicator.swift */; };
@@ -26,6 +27,7 @@
 		D00BF56F23ACFAFB006AE10D /* DeviceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceView.swift; sourceTree = "<group>"; };
 		D0730D1023C0C0C900E3629A /* Types.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Types.swift; sourceTree = "<group>"; };
 		D0A797C5238CD3640042A5FF /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		D0BFBEED23C4ADBE001C9052 /* StateManagers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateManagers.swift; sourceTree = "<group>"; };
 		D0C6ABB02393A625002A429B /* MainMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenuView.swift; sourceTree = "<group>"; };
 		D0C6ABB32393A727002A429B /* Utilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
 		D0C6ABB42393A727002A429B /* ActivityIndicator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActivityIndicator.swift; sourceTree = "<group>"; };
@@ -90,6 +92,7 @@
 				D0E4F660236DB91200ECC73A /* LaunchScreen.storyboard */,
 				D0E4F663236DB91200ECC73A /* Info.plist */,
 				D0730D1023C0C0C900E3629A /* Types.swift */,
+				D0BFBEED23C4ADBE001C9052 /* StateManagers.swift */,
 				D0E4F65D236DB91200ECC73A /* Preview Content */,
 				D0C6ABB22393A71D002A429B /* Helpers */,
 			);
@@ -178,6 +181,7 @@
 				D0C6ABB52393A727002A429B /* Utilities.swift in Sources */,
 				D0C6ABB12393A625002A429B /* MainMenuView.swift in Sources */,
 				D00BF57023ACFAFB006AE10D /* DeviceView.swift in Sources */,
+				D0BFBEEE23C4ADBE001C9052 /* StateManagers.swift in Sources */,
 				D0730D1123C0C0C900E3629A /* Types.swift in Sources */,
 				D0E4F656236DB90F00ECC73A /* AppDelegate.swift in Sources */,
 				D0C6ABB82393A92D002A429B /* ServerCredential.swift in Sources */,
