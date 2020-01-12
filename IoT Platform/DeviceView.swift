@@ -35,7 +35,7 @@ struct DeviceView: View {
     @State var switchState = false
     
     var body: some View {
-        List(0..<numberOfRowsInTable) { index in
+        List(0..<numberOfRowsInTable, id: \.self) { index in
             if self.controlHandler.loading {
                 HStack {
                     Spacer()
@@ -151,12 +151,14 @@ class ControlHandler: ObservableObject {
             
             let success = responseDict!["success"] as! Bool
             if success {
+                self.success = true
+                
                 // Create the states
+                
                 let allStatus = responseDict!["status"] as! [[String:Any]]
                 for status in allStatus {
                     self.createControlStatus(with: device, status: status)
                 }
-                self.success = true
             } else {
                 let error = responseDict!["error"]
                 self.errorString = error as? String
