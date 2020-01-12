@@ -60,7 +60,7 @@ Now [configure the client's web server just like you did before](https://code-ma
 Create a new file in `/var/www/html` called `config.json`. edit it. 
 
 Paste the following into the file:
-`
+```
 [
     {
         "displayName":"<name of control>",
@@ -70,13 +70,13 @@ Paste the following into the file:
         "gpio":<port number here>
     }
 ]
-`
+```
 
 Replace `<port number here>` with the port number you plugged in your switch into. Replace `<name of control>` with the display name of the switch (displayed in the app). 
 
 For multiple switches on one devices, follow this pattern:
 
-`
+```
 [
     {
         "displayName":"<name of control 1>",
@@ -93,7 +93,7 @@ For multiple switches on one devices, follow this pattern:
         "gpio":<port number here>
     }
 ]
-`
+```
 
 **IMPORTANT**: Make sure the `parameterName` (aka `state` and `state2`) do not repeat, that's the unique identifier for each switch!
 
