@@ -74,6 +74,8 @@ Paste the following into the file:
 
 Replace `<port number here>` with the port number you plugged in your switch into. Replace `<name of control>` with the display name of the switch (displayed in the app). 
 
+To get help with the GPIO port number on the Raspberry Pi, see http://pinout.xyz. 
+
 For multiple switches on one devices, follow this pattern:
 
 ```
