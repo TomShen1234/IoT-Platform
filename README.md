@@ -49,9 +49,10 @@ First, install the same set of software you installed for the server. Here's the
 
 Then, download and unzip the client files just like the server files, and place them into the web server's folder:
 
-`curl -SL https://github.com/TomShen1234/IoT-Platform/releases/download/1.0/client-v1.zip | tar -xf - -C .
+```
+curl -SL https://github.com/TomShen1234/IoT-Platform/releases/download/1.0/client-v1.zip | tar -xf - -C .
 sudo cp client/* /var/www/html
-`
+```
 
 Now [configure the client's web server just like you did before](https://code-maven.com/set-up-cgi-with-apache). 
 
