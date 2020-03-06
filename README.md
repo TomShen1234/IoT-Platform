@@ -31,7 +31,26 @@ Copy the 3 files from the unzipped folder into the web server's directory: `/var
 
 (You may have to enter your password)
 
-Now we get to the hardest part. You have to prepare the server to host the Python script we've just downloaded. This setup is quite complicated and is different for every system. If you're on the Raspberry Pi (or other Linux based systems), you can use [this tutorial](https://code-maven.com/set-up-cgi-with-apache). You can test this by going to the browser on your server and go to `http://localhost/discover.py`. If you get something along the line of: `{"devicesCount": 0, "devices": []}` (or something similar), you're all set up. If you see the source code of the program, you have a problem and will have to repeat the steps more carefully. 
+Now we get to the hardest part. You have to prepare the server to host the Python script we've just downloaded. This setup is quite complicated and is different for every system. If you're on the Raspberry Pi (or other Linux based systems), the web server already comes preconfigured to allow Python script, enable it with:
+
+```
+cd /etc/apache2/mods-enabled
+sudo a2dismod mpm_event
+sudo a2enmod mpm_prefork
+sudo a2enmod cgi
+```
+
+Now slightly modify the configuration file located at `/etc/apache2/conf-available/serve-cgi-bin.conf`. 
+
+Add a hashtag to this line: `ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/` -> `#ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/`
+
+Change this line: `<Directory "/usr/lib/cgi-bin">` to: `<Directory "/var/www/html">`
+
+Add this line below the line you have just changed: `AddHandler cgi-script .py`
+
+Reload the webserver: `sudo service apache2 reload`. 
+
+You can test this by going to the browser on your server and go to `http://localhost/discover.py`. If you get something along the line of: `{"devicesCount": 0, "devices": []}` (or something similar), you're all set up. If you see the source code of the program, you have a problem and will have to repeat the steps more carefully. 
 
 ## Setting up clients
 
@@ -54,7 +73,8 @@ curl -SL https://github.com/TomShen1234/IoT-Platform/releases/download/1.0/clien
 sudo cp client/* /var/www/html
 ```
 
-Now [configure the client's web server just like you did before](https://code-maven.com/set-up-cgi-with-apache). 
+Now configure the client's web server to accept Python scripts just like how you did with the server. 
+
 
 ## Writing configuration file
 
@@ -65,9 +85,9 @@ Paste the following into the file:
 [
     {
         "displayName":"<name of control>",
-	      "parameterName":"state",
+	"parameterName":"state",
         "type":"switch",
-	      "className":"simpleswitch",
+	"className":"simpleswitch",
         "gpio":<port number here>
     }
 ]
@@ -83,16 +103,16 @@ For multiple switches on one devices, follow this pattern:
 [
     {
         "displayName":"<name of control 1>",
-	      "parameterName":"state",
+	"parameterName":"state",
         "type":"switch",
-	      "className":"simpleswitch",
+	"className":"simpleswitch",
         "gpio":<port number here>
     },
     {
         "displayName":"<name of control 2>",
-	      "parameterName":"state2",
+	"parameterName":"state2",
         "type":"switch",
-	      "className":"simpleswitch",
+	"className":"simpleswitch",
         "gpio":<port number here>
     }
 ]
