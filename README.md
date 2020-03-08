@@ -34,7 +34,6 @@ Copy the 3 files from the unzipped folder into the web server's directory: `/var
 Now we get to the hardest part. You have to prepare the server to host the Python script we've just downloaded. This setup is quite complicated and is different for every system. If you're on the Raspberry Pi (or other Linux based systems), the web server already comes preconfigured to allow Python script, enable it with:
 
 ```
-cd /etc/apache2/mods-enabled
 sudo a2dismod mpm_event
 sudo a2enmod mpm_prefork
 sudo a2enmod cgi
@@ -137,5 +136,7 @@ For multiple switches on one devices, follow this pattern:
 **IMPORTANT**: Make sure the `parameterName` (aka `state` and `state2`) do not repeat, that's the unique identifier for each switch!
 
 For even more devices, just follow the pattern (note the comma at the end of the first closing bracket, that's important). 
+
+Finally allow the webserver to access the physical GPIO pins: `sudo adduser www-data gpio`. 
 
 And... you're done!
