@@ -75,6 +75,22 @@ sudo cp client/* /var/www/html
 
 Now configure the client's web server to accept Python scripts just like how you did with the server. 
 
+## Configure local discovery service
+
+In order for the server to discover your Raspberry Pi client, you need to configure a "Bonjour" service. To do that, create a new file called `iot.service` at `/etc/avahi/services/` and paste in the following contents:
+
+```
+<?xml version="1.0" standalone='no'?><!--*-nxml-*-->
+<!DOCTYPE service-group SYSTEM "avahi-service.dtd">
+<service-group>
+<name replace-wildcards="yes">%h</name>
+<service>
+<type>_iotdevice._tcp</type>
+<port>80</port>
+</service>
+</service-group>
+```
+
 
 ## Writing configuration file
 
