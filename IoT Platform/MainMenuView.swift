@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import Combine
 
 struct MainMenuView: View {
     var serverCredential: ServerCredential
@@ -19,17 +20,13 @@ struct MainMenuView: View {
     }
     
     var body: some View {
-        NavigationView {
+        VStack {
             if !clientStore.completed {
                 // Loading
                 VStack {
                     Text("Server: \(serverCredential.server)")
-                    HStack {
-                        Text("Loading...")
-                        ActivityIndicator(isAnimating: true, style: .medium, alwaysUseWhite: false)
-                    }
+                    LoadingIndicator()
                 }
-                .navigationBarTitle("Devices", displayMode: .automatic)
             } else {
                 if clientStore.success {
                     // Success
@@ -38,7 +35,6 @@ struct MainMenuView: View {
                             Text("Device \(index): \(self.clientStore.devicesArray!.devices[index].name)")
                         }
                     }
-                    .navigationBarTitle("Devices: \(serverCredential.server)", displayMode: .automatic)
                 } else {
                     // Error
                     VStack {
@@ -48,10 +44,10 @@ struct MainMenuView: View {
                             .multilineTextAlignment(.center)
                         // TODO: Add retry button
                     }
-                    .navigationBarTitle("Devices", displayMode: .automatic)
                 }
             }
         }
+        .navigationBarTitle("Devices", displayMode: .inline)
         .animation(.easeInOut)
         .onAppear {
             self.clientStore.serverAddress = self.serverCredential.server
@@ -72,7 +68,8 @@ class IoTClientStore: ObservableObject {
     
     var devicesArray: DevicesArray? = nil
     
-    // TODO: Support system without central hub
+    var dataTasks = Set<AnyCancellable>()
+    
     func discover() {
         if serverAddress.count == 0 {
             errorString = "Please set server URL."
@@ -84,47 +81,40 @@ class IoTClientStore: ObservableObject {
             serverAddress = "http://" + serverAddress
         }
         
-        URLSession.shared.dataTask(with: URL(string: serverAddress + "/discover.py")!) { (data, response, error) in
-            defer {
-                DispatchQueue.main.async {
-                    self.completed = true
+        URLSession.shared.dataTaskPublisher(for: URL(string: serverAddress + "/discover.py")!)
+            .tryMap { output in
+                try HTTPError.assertHTTPStatus(output.response)
+                
+                return output.data
+            }
+            .decode(type: DevicesArray.self, decoder: JSONDecoder())
+            .receive(on: RunLoop.main)
+            .eraseToAnyPublisher()
+            .sink(receiveCompletion: { completion in
+                switch completion {
+                case .finished:
+                    self.success = true
+                case .failure(let error):
+                    if let httpError = error as? HTTPError {
+                        self.errorString = httpError.getErrorString()
+                    } else {
+                        self.errorString = error.localizedDescription
+                    }
                 }
+                
+                self.completed = true
+            }) { results in
+                self.devicesArray = results
             }
-            
-            if error != nil {
-                self.errorString = error!.localizedDescription
-                return
-            }
-            
-            let httpResponse = response as? HTTPURLResponse
-            if httpResponse?.statusCode != 200 {
-                self.errorString = "Wrong status code"
-                return
-            }
-            
-            if data == nil {
-                self.errorString = "No data"
-                return
-            }
-            
-            let devicesArray: DevicesArray
-            do {
-                devicesArray = try JSONDecoder().decode(DevicesArray.self, from: data!)
-            } catch let error {
-                self.errorString = error.localizedDescription
-                return
-            }
-            
-            self.devicesArray = devicesArray
-            
-            self.success = true
-        }.resume()
+            .store(in: &dataTasks)
     }
 }
 
 // MARK: - Preview
 struct MainMenuView_Previews: PreviewProvider {
     static var previews: some View {
-        MainMenuView(serverCredential: ServerCredential())
+        NavigationView {
+            MainMenuView(serverCredential: ServerCredential())
+        }
     }
 }

@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Combine
 
 /// Subclass to implement custom states
 class DeviceStateManager {
@@ -25,6 +26,8 @@ class SwitchStateManager: DeviceStateManager {
     
     var enabled: Bool
     
+    private var dataTasks = Set<AnyCancellable>()
+    
     init(state: Bool, control: Control) {
         self.state = state
         self.loading = false
@@ -32,7 +35,7 @@ class SwitchStateManager: DeviceStateManager {
         super.init(control: control)
     }
     
-    func updateState(to device: String, with serverCredential: ServerCredential, _ completion: @escaping (_ success: Bool) -> Void) {
+    func updateState(to device: String, with serverCredential: ServerCredential, direct: Bool, _ completion: @escaping (_ success: Bool) -> Void) {
         let newState = ["device":control.parameterName, "state":state] as [String : Any]
         
         let json = try? JSONSerialization.data(withJSONObject: newState, options: .fragmentsAllowed)
@@ -45,53 +48,39 @@ class SwitchStateManager: DeviceStateManager {
         
         let jsonStringEncoded = jsonString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
         
-        let urlString = "http://\(serverCredential.server)/execute.py?device=\(device)&command=\(jsonStringEncoded)"
+        let urlString: String
+        if direct {
+            urlString = "http://\(serverCredential.server)/run.py?device=\(device)&command=\(jsonStringEncoded)"
+        } else {
+            // Through a central server
+            urlString = "http://\(serverCredential.server)/execute.py?device=\(device)&command=\(jsonStringEncoded)"
+        }
         
         //print(urlString)
         
-        URLSession.shared.dataTask(with: URL(string: urlString)!) { (data, response, error) in
-            if error != nil {
-                DispatchQueue.main.async {
-                    completion(false)
+        URLSession.shared.dataTaskPublisher(for: URL(string: urlString)!)
+            .tryMap { output -> Bool in
+                try HTTPError.assertHTTPStatus(output.response)
+                
+                let returnedData = try JSONSerialization.jsonObject(with: output.data, options: .allowFragments)
+                
+                guard let dict = returnedData as? [String:Any] else {
+                    throw HTTPError.invalidData
                 }
-                return
+                
+                guard let success = dict["success"] as? Int else {
+                    throw HTTPError.invalidData
+                }
+                
+                return success == 1
             }
-            
-            let httpResponse = response as? HTTPURLResponse
-            if httpResponse?.statusCode != 200 {
-                DispatchQueue.main.async {
-                    completion(false)
-                }
-                return
+            .retry(1) // Retry 1 time before failing
+            .replaceError(with: false) // Just discard the error if still fails
+            .receive(on: RunLoop.main)
+            .eraseToAnyPublisher()
+            .sink { value in
+                completion(value)
             }
-            
-            if data == nil {
-                DispatchQueue.main.async {
-                    completion(false)
-                }
-                return
-            }
-            
-            let dict = try? JSONSerialization.jsonObject(with: data!, options: .allowFragments) as? [String:Any]
-            
-            if dict == nil {
-                DispatchQueue.main.async {
-                    completion(false)
-                }
-                return
-            }
-            
-            let success = dict!["success"] as! Int
-            if success == 1 {
-                DispatchQueue.main.async {
-                    completion(true)
-                }
-            } else {
-                // No success, fail
-                DispatchQueue.main.async {
-                    completion(false)
-                }
-            }
-        }.resume()
+            .store(in: &dataTasks)
     }
 }

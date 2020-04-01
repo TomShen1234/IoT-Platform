@@ -25,6 +25,25 @@ class Device: Codable, CustomStringConvertible {
     var name: String
     var controls: [Control]
     
+    private var _direct: Bool?
+    
+    var direct: Bool {
+        get {
+            return _direct ?? false
+        }
+        
+        set {
+            self._direct = newValue
+        }
+    }
+    
+    // Use when loading from net is required
+    init(name: String) {
+        self.name = name
+        self._direct = true
+        self.controls = []
+    }
+    
     // For previews
     init(name: String, controls: [Control]) {
         self.name = name

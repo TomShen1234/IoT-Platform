@@ -64,9 +64,9 @@ Paste the following into the file:
 [
     {
         "displayName":"<name of control>",
-	      "parameterName":"state",
+	    "parameterName":"state",
         "type":"switch",
-	      "className":"simpleswitch",
+        "className":"simpleswitch",
         "gpio":<port number here>
     }
 ]
@@ -82,16 +82,16 @@ For multiple switches on one devices, follow this pattern:
 [
     {
         "displayName":"<name of control 1>",
-	      "parameterName":"state",
+        "parameterName":"state",
         "type":"switch",
-	      "className":"simpleswitch",
+        "className":"simpleswitch",
         "gpio":<port number here>
     },
     {
         "displayName":"<name of control 2>",
-	      "parameterName":"state2",
+        "parameterName":"state2",
         "type":"switch",
-	      "className":"simpleswitch",
+        "className":"simpleswitch",
         "gpio":<port number here>
     }
 ]
